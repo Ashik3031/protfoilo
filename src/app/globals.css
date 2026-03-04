@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Skyscapers';
+  src: url('/fonts/Skyscapers.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-background: #f2f2f2;
+  --color-foreground: #1a1a1a;
+  --color-accent: #ff4d00;
+
+  --font-sans: 'Skyscapers', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Skyscapers', serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+@layer base {
+  :root {
+    --background: #f2f2f2;
+    --foreground: #1a1a1a;
+    --accent: #ff4d00;
+    --cream: #f9f7f2;
+    font-family: 'Skyscapers', system-ui, sans-serif;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Skyscapers', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight uppercase;
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply py-24 px-6 md:px-12 lg:px-24;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 77, 0, 0.2);
+  }
+
+  .toy-card {
+    @apply bg-white border border-black/5 rounded-2xl p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2;
+  }
+
+  /* Pill Styles for Hero */
+  .pill {
+    @apply inline-flex items-center justify-center px-6 py-2 rounded-full font-bold transition-transform duration-500;
+  }
+
+  .pill-gray {
+    @apply bg-[#ededed] text-black;
+  }
+
+  .pill-white {
+    @apply bg-white text-black shadow-sm;
+  }
+
+  .pill-pink {
+    @apply bg-[#fce4ec] text-[#d81b60];
+  }
+
+  .pill-blue {
+    @apply bg-[#e3f2fd] text-[#1e88e5];
+  }
+
+  .pill-purple {
+    @apply bg-[#f3e5f5] text-[#8e24aa];
+  }
+
+  .hero-text-large {
+    @apply text-3xl md:text-5xl lg:text-7xl font-black uppercase tracking-tight;
+    font-family: var(--font-mono);
+  }
+
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .text-editorial {
+    @apply font-serif italic lowercase tracking-tight;
+  }
+
+  .horizontal-rule {
+    @apply w-full h-px bg-black/10 my-8;
+  }
+
+  .service-tag {
+    @apply px-3 py-1 bg-black/5 text-[10px] font-mono uppercase tracking-wider rounded-sm;
+  }
+}
+
+/* Custom Mini Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1a1a1a;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #000;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Three.js Canvas Styles */
+.canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.canvas-container canvas {
+  pointer-events: auto;
+}
