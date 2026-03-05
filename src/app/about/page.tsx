@@ -39,7 +39,7 @@ export default function AboutPage() {
                             <h2 className="text-4xl md:text-5xl font-black uppercase mb-12">Building What <br /> Becomes Real</h2>
                             <div className="space-y-6 text-lg font-medium opacity-80 uppercase leading-relaxed">
                                 <p>My journey in tech has evolved into architecting robust, enterprise-grade systems. As a Senior Engineer, I focus on delivering scalable, production-ready applications that solve complex business challenges.</p>
-                                <p>From engineering marketplace platforms serving 100K+ users to developing sophisticated React Native mobile solutions, my philosophy remains constant: high performance, clean architecture, and seamless user experiences are the foundations of success.</p>
+                                <p>From engineering marketplace platforms serving 100K+ users to developing sophisticated React Native mobile solutions, my philosophy remains constant: high performance, clean architecture, and seamless user experiences are the foundations of the success.</p>
                             </div>
                         </div>
 
