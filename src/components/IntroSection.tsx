@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function IntroSection() {
     return (
@@ -74,12 +75,12 @@ export function IntroSection() {
                         that bridge complex business requirements with seamless user experiences.
                     </p>
 
-                    <a
+                    <Link
                         href="/services"
                         className="inline-block text-[12px] font-black uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-accent hover:border-accent transition-colors"
                     >
                         READ MY STORY & SERVICES
-                    </a>
+                    </Link>
                 </motion.div>
             </div>
         </section>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float, Text } from "@react-three/drei";
+import { Environment, Float, Text, useProgress } from "@react-three/drei";
 import * as THREE from "three";
 
 function LoaderShape() {
@@ -19,12 +19,15 @@ function LoaderShape() {
 }
 
 export function Loader() {
-    const [progress, setProgress] = useState(0);
+    const { active, progress: realProgress } = useProgress();
+    const [syntheticProgress, setSyntheticProgress] = useState(0);
+    const [minimumTimePassed, setMinimumTimePassed] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    // 1. Minimum Time / Synthetic Progress Timer (Ensures the loader looks good even if cached)
     useEffect(() => {
-        const duration = 3000; // 3 seconds total loading time
-        const interval = 30; // Update every 30ms for smooth counting
+        const duration = 2500; // 2.5s minimum time
+        const interval = 30; // Update every 30ms
         const steps = duration / interval;
         let currentStep = 0;
 
@@ -32,23 +35,36 @@ export function Loader() {
             currentStep++;
             const rawProgress = Math.min(1, currentStep / steps);
 
-            // Easing function for smoother progress visual
+            // Smooth ease out for the synthetic visual
             const easeOutQuart = 1 - Math.pow(1 - rawProgress, 4);
-            const calculatedProgress = Math.min(100, Math.floor(easeOutQuart * 100));
+            setSyntheticProgress(Math.floor(easeOutQuart * 99)); // Goes up to 99%
 
-            setProgress(calculatedProgress);
-
-            if (currentStep >= steps || calculatedProgress >= 100) {
+            if (currentStep >= steps) {
+                setMinimumTimePassed(true);
                 clearInterval(timer);
-                setProgress(100); // Force UI to show exactly 100% just in case
-                setTimeout(() => {
-                    setIsLoading(false);
-                }, 500); // Brief pause at exactly 100% before hiding
             }
         }, interval);
 
         return () => clearInterval(timer);
     }, []);
+
+    // 2. Hide Loader Condition
+    useEffect(() => {
+        // Consider the 3D assets loaded if realProgress hits 100, 
+        // OR if active is false (meaning nothing is in the Drei queue right now).
+        const isDreiLoaded = realProgress >= 100 || !active;
+
+        if (minimumTimePassed && isDreiLoaded) {
+            // Both conditions met, we can close!
+            setTimeout(() => setIsLoading(false), 400);
+        }
+    }, [minimumTimePassed, realProgress, active]);
+
+    // The displayed progress is the highest of either the synthetic timer or the real asset load.
+    // If we're done, force exactly 100%. Ensure no NaN if realProgress is undefined.
+    const validRealProgress = isNaN(realProgress) ? 0 : Math.floor(realProgress);
+    const isDone = minimumTimePassed && (validRealProgress >= 100 || !active);
+    const displayProgress = isDone ? 100 : Math.max(syntheticProgress, validRealProgress);
 
     // Prevent scrolling while loading
     useEffect(() => {
@@ -102,7 +118,7 @@ export function Loader() {
                             className="overflow-hidden"
                         >
                             <span className="text-8xl md:text-9xl font-black text-white italic tracking-tighter mix-blend-difference">
-                                {progress}
+                                {displayProgress}
                             </span>
                             <span className="text-2xl md:text-4xl font-bold text-[#ff4800] align-top ml-2">
                                 %
@@ -122,7 +138,7 @@ export function Loader() {
                     <div className="absolute bottom-0 left-0 w-full h-1 bg-white/10 z-20">
                         <motion.div
                             className="h-full bg-[#ff4800]"
-                            style={{ width: `${progress}%` }}
+                            style={{ width: `${displayProgress}%` }}
                             transition={{ ease: "easeOut" }}
                         />
                     </div>
