@@ -46,7 +46,8 @@ export function Hero() {
         <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#f9f7f2]">
 
             {/* Mute Button - Top Right */}
-            <div className="fixed top-12 right-6 md:right-12 lg:right-24 z-[60] pointer-events-auto">
+            {/* Moved down on mobile (top-24) to avoid overlapping the Navbar menu button */}
+            <div className="fixed top-24 md:top-12 right-6 md:right-12 lg:right-24 z-[60] pointer-events-auto">
                 <button
                     onClick={() => setIsMuted(!isMuted)}
                     className="group bg-white/80 backdrop-blur-md border border-black/5 p-3 rounded-full hover:bg-black hover:text-white transition-all duration-500 shadow-sm"
@@ -99,12 +100,12 @@ export function Hero() {
                 <div className="flex flex-col items-center gap-2">
 
                     {/* Row 1: Ashik + Senior Engineer */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap justify-center items-center gap-2">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.6 }}
-                            className="pill pill-purple text-2xl md:text-3xl lg:text-4xl"
+                            className="pill pill-purple text-xl md:text-3xl lg:text-4xl"
                         >
                             Turning
                         </motion.div>
@@ -112,19 +113,19 @@ export function Hero() {
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, delay: 0.1 }}
-                            className="pill pill-gray text-3xl md:text-5xl lg:text-7xl tracking-tighter"
+                            className="pill pill-gray text-2xl md:text-5xl lg:text-7xl tracking-tighter"
                         >
                             Complex Problems
                         </motion.div>
                     </div>
 
                     {/* Row 2: MERN + React Native + Architecture */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap justify-center items-center gap-2">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.6, delay: 0.2 }}
-                            className="pill pill-pink text-2xl md:text-3xl lg:text-4xl"
+                            className="pill pill-pink text-xl md:text-3xl lg:text-4xl"
                         >
                             into
                         </motion.div>
@@ -132,7 +133,7 @@ export function Hero() {
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, delay: 0.3 }}
-                            className="pill pill-blue text-2xl md:text-5xl lg:text-7xl tracking-tighter"
+                            className="pill pill-blue text-xl md:text-5xl lg:text-7xl tracking-tighter"
                         >
                             Scalable
                         </motion.div>
@@ -140,7 +141,7 @@ export function Hero() {
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.4 }}
-                            className="pill pill-gray text-2xl md:text-3xl lg:text-6xl tracking-tighter"
+                            className="pill pill-gray text-xl md:text-3xl lg:text-6xl tracking-tighter"
                         >
                             Architecture
                         </motion.div>

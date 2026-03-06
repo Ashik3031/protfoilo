@@ -92,11 +92,11 @@ function ServiceItem({ service, index }: { service: typeof services[0], index: n
                 {/* Service Content */}
                 <motion.div
                     style={{ y }}
-                    className="w-full md:w-1/2 flex flex-col justify-center"
+                    className="w-full md:w-1/2 flex flex-col justify-center mt-8 md:mt-0"
                 >
-                    <div className="flex items-center gap-4 mb-8">
+                    <div className="flex items-center gap-4 mb-6 md:mb-8">
                         <span className="font-mono text-xs opacity-40">(0{index + 1})</span>
-                        <h2 className="text-4xl md:text-6xl font-serif tracking-tight lowercase italic">
+                        <h2 className="text-3xl sm:text-4xl md:text-6xl font-serif tracking-tight lowercase italic">
                             {service.title}
                         </h2>
                     </div>
@@ -155,7 +155,7 @@ export default function ServicesPage() {
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                            className="text-[11vw] md:text-[7vw] font-serif leading-[0.9] tracking-tight flex flex-wrap gap-x-[0.2em] gap-y-[0.1em]"
+                            className="text-5xl sm:text-6xl md:text-[7vw] font-serif leading-[0.9] tracking-tight flex flex-wrap gap-x-[0.2em] gap-y-[0.1em]"
                         >
                             <span>Where</span>
                             <span className="italic">Originality</span>
@@ -167,7 +167,7 @@ export default function ServicesPage() {
                             <span className="inline-flex items-center justify-center rotate-12 -translate-y-[0.1em] scale-110">
                                 <Code2Icon className="w-[0.8em] h-[0.8em] text-black/10" />
                             </span>
-                            <br />
+                            <br className="hidden md:block" />
                             <span className="italic block w-full mt-2">Authenticity</span>
                         </motion.h1>
 
@@ -175,13 +175,13 @@ export default function ServicesPage() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.8, delay: 0.3 }}
-                            className="max-w-md md:text-right"
+                            className="w-full md:max-w-md md:text-right mt-8 md:mt-0"
                         >
-                            <p className="text-xl md:text-2xl font-serif italic leading-relaxed opacity-80">
+                            <p className="text-lg md:text-2xl font-serif italic leading-relaxed opacity-80">
                                 Our ethos is anchored in the creation of experiences that feel Unmistakably Original.
                             </p>
-                            <div className="horizontal-rule bg-black md:ml-auto md:mr-0 max-w-[100px]" />
-                            <p className="text-xs uppercase tracking-widest font-bold opacity-40">
+                            <div className="horizontal-rule bg-black md:ml-auto md:mr-0 max-w-[100px] my-6" />
+                            <p className="text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-40">
                                 We believe that true originality stems from a blend of experiences...
                             </p>
                         </motion.div>

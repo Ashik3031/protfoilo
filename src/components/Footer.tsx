@@ -22,7 +22,7 @@ export function Footer() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
                         <div className="flex flex-col gap-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-accent">Navigation</span>
                             <Link href="/work" className="font-bold uppercase tracking-widest hover:text-accent transition-colors">Work</Link>

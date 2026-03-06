@@ -22,9 +22,9 @@ export function ProjectsSection() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="text-5xl md:text-7xl lg:text-9xl font-black uppercase text-white leading-none"
+                            className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-black uppercase text-white leading-none"
                         >
-                            Let&apos;s <br />
+                            Let&apos;s <br className="hidden md:block" />
                             <span className="text-accent">Connect</span>
                         </motion.h2>
                         <motion.p
@@ -43,7 +43,7 @@ export function ProjectsSection() {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3 }}
-                        className="flex-shrink-0"
+                        className="flex-shrink-0 mt-8 md:mt-0"
                     >
                         <Link
                             href="/contact"
