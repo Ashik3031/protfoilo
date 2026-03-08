@@ -19,7 +19,7 @@ export function Navbar() {
     return (
         <nav className="fixed top-0 left-0 w-full z-50 py-10 px-6 md:px-12 lg:px-24 flex items-center justify-between pointer-events-none">
             {/* Logo - T:\ layout */}
-            <Link href="/" className="pointer-events-auto text-black font-black text-2xl tracking-tighter hover:opacity-70 transition-opacity">
+            <Link href="/" className="pointer-events-auto text-white mix-blend-difference font-black text-2xl tracking-tighter hover:opacity-70 transition-opacity">
                 ashik
             </Link>
 

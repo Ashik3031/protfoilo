@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
-
 import { Loader } from "@/components/Loader";
+import { ScrollProgress } from "@/components/ScrollProgress";
 
 const skyscapers = localFont({
   src: "../../public/fonts/Skyscapers.ttf",
@@ -28,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <SmoothScroll>
+          <ScrollProgress />
           <Loader />
           {children}
         </SmoothScroll>

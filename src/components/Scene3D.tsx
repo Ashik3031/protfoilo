@@ -26,15 +26,13 @@ export function Scene3D({ animation }: { animation?: string }) {
                 }}
             >
                 <Suspense fallback={null}>
-                    <ambientLight intensity={0.5} />
-                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-                    <pointLight position={[-10, -10, -10]} intensity={0.5} />
+                    <ambientLight intensity={1.5} />
+                    <directionalLight position={[10, 10, 5]} intensity={1.5} castShadow />
+                    <pointLight position={[-10, -10, -5]} intensity={1} />
 
                     <group>
                         <Character animation={animation} />
                     </group>
-
-                    <Environment preset="city" />
                 </Suspense>
             </Canvas>
         </div>
