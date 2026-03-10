@@ -26,7 +26,7 @@ export function Loader() {
 
     // 1. Minimum Time / Synthetic Progress Timer (Ensures the loader looks good even if cached)
     useEffect(() => {
-        const duration = 2500; // 2.5s minimum time
+        const duration = 1000; // 1s minimum time
         const interval = 30; // Update every 30ms
         const steps = duration / interval;
         let currentStep = 0;

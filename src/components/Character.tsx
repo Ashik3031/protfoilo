@@ -8,11 +8,9 @@ import { useFollowCursor } from "@/hooks/useFollowCursor";
 
 export function Character({ animation = "idle" }: { animation?: string }) {
     const model = useFBX("/base.fbx");
-    const danceFBX = useFBX("/Wave Hip Hop Dance.fbx");
-    const actionFBX = useFBX("/Swing To Land.fbx");
-    const sleepFBX = useFBX("/Sleeping Idle.fbx");
     const wavingFBX = useFBX("/Waving.fbx");
 
+    // Non-essential animations will be loaded asynchronously
     const group = useRef<THREE.Group>(null);
     const mixer = useRef<THREE.AnimationMixer | null>(null);
     const actions = useRef<{ [key: string]: THREE.AnimationAction }>({});
@@ -56,16 +54,26 @@ export function Character({ animation = "idle" }: { animation?: string }) {
             actions.current[name] = action;
         };
 
-        setupAnimation(danceFBX, "dance");
-        setupAnimation(actionFBX, "action");
-        setupAnimation(sleepFBX, "sleep");
         setupAnimation(wavingFBX, "waving");
+
+        // Dynamically load other animations to speed up initial load
+        const loader = new (require("three/examples/jsm/loaders/FBXLoader").FBXLoader)();
+
+        const loadLazyAnimation = (path: string, name: string) => {
+            loader.load(path, (fbx: any) => {
+                setupAnimation(fbx, name);
+            });
+        };
+
+        loadLazyAnimation("/Wave Hip Hop Dance.fbx", "dance");
+        loadLazyAnimation("/Swing To Land.fbx", "action");
+        loadLazyAnimation("/Sleeping Idle.fbx", "sleep");
 
         return () => {
             mixer.current?.stopAllAction();
             mixer.current = null;
         };
-    }, [model, danceFBX, actionFBX, sleepFBX, wavingFBX]);
+    }, [model, wavingFBX]);
 
     useEffect(() => {
         if (!mixer.current) return;
@@ -150,7 +158,5 @@ export function Character({ animation = "idle" }: { animation?: string }) {
 }
 
 useFBX.preload("/base.fbx");
-useFBX.preload("/Wave Hip Hop Dance.fbx");
-useFBX.preload("/Swing To Land.fbx");
-useFBX.preload("/Sleeping Idle.fbx");
 useFBX.preload("/Waving.fbx");
+// Removed preloads for non-essential animations to speed up initial site load
