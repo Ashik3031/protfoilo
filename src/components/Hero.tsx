@@ -73,7 +73,6 @@ export function Hero() {
             <div className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-4">
                 {[
                     { id: "dance", label: "Dance" },
-                    { id: "action", label: "Action" },
                     { id: "sleep", label: "Sleep" },
                     { id: "waving", label: "Idle" }
                 ].map((btn) => (

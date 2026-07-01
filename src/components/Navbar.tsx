@@ -10,7 +10,7 @@ const navLinks = [
     { name: "Work", href: "/work" },
     { name: "Connect", href: "/contact" },
 
-    { name: "Resume", href: "/Ashik_Mohammed_s (2).pdf" },
+    { name: "Resume", href: "/Ashik_Mohammed_s (3).pdf" },
 ];
 
 export function Navbar() {

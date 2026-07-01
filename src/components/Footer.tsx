@@ -29,7 +29,7 @@ export function Footer() {
                             <Link href="/about" className="font-bold uppercase tracking-widest hover:text-accent transition-colors">About</Link>
                             <Link href="/services" className="font-bold uppercase tracking-widest hover:text-accent transition-colors">Services</Link>
                             <Link href="/contact" className="font-bold uppercase tracking-widest hover:text-accent transition-colors">Contact</Link>
-                            <a href="/Ashik_Mohammed_s (2).pdf" download className="font-bold uppercase tracking-widest text-accent hover:underline transition-all">Resume (PDF)</a>
+                            <a href="/Ashik_Mohammed_s (3).pdf" download className="font-bold uppercase tracking-widest text-accent hover:underline transition-all">Resume (PDF)</a>
                         </div>
                         <div className="flex flex-col gap-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-accent">Social</span>
