@@ -4,17 +4,44 @@ import { useRef, useEffect } from "react";
 import { useFBX, ContactShadows } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader";
 import { useFollowCursor } from "@/hooks/useFollowCursor";
+
+type FBXModel = {
+    animations?: THREE.AnimationClip[];
+};
+
+type TrackWithName = THREE.KeyframeTrack & { name: string };
 
 export function Character({ animation = "idle" }: { animation?: string }) {
     const model = useFBX("/base.fbx");
     const wavingFBX = useFBX("/Waving.fbx");
 
-    // Non-essential animations will be loaded asynchronously
+    // Non-essential animations load only when required to speed up initial render.
     const group = useRef<THREE.Group>(null);
     const mixer = useRef<THREE.AnimationMixer | null>(null);
     const actions = useRef<{ [key: string]: THREE.AnimationAction }>({});
+    const loadedActions = useRef<Set<string>>(new Set());
+    const pendingAnimation = useRef<string | null>(null);
     const { target } = useFollowCursor();
+
+    const playAnimation = (name: string) => {
+        const nextAction = actions.current[name];
+        if (!nextAction) return;
+
+        const currentActions = Object.values(actions.current).filter((action) => action.isRunning());
+        currentActions.forEach((action) => {
+            if (action !== nextAction) {
+                action.fadeOut(0.5);
+            }
+        });
+
+        nextAction.reset()
+            .setEffectiveWeight(1)
+            .setLoop(THREE.LoopRepeat, Infinity)
+            .fadeIn(0.5)
+            .play();
+    };
 
     useEffect(() => {
         if (!model) return;
@@ -34,20 +61,21 @@ export function Character({ animation = "idle" }: { animation?: string }) {
 
         mixer.current = new THREE.AnimationMixer(model);
 
-        const setupAnimation = (fbx: any, name: string) => {
+        const setupAnimation = (fbx: FBXModel, name: string) => {
             if (!fbx?.animations?.length) return;
             const clip = fbx.animations[0].clone();
-            clip.tracks.forEach((track: any) => {
-                const dotIdx = track.name.lastIndexOf('.');
-                const property = dotIdx !== -1 ? track.name.slice(dotIdx + 1) : "quaternion";
-                const nodeNameRaw = dotIdx !== -1 ? track.name.slice(0, dotIdx) : track.name;
+            clip.tracks.forEach((track) => {
+                const typedTrack = track as TrackWithName;
+                const dotIdx = typedTrack.name.lastIndexOf('.');
+                const property = dotIdx !== -1 ? typedTrack.name.slice(dotIdx + 1) : "quaternion";
+                const nodeNameRaw = dotIdx !== -1 ? typedTrack.name.slice(0, dotIdx) : typedTrack.name;
                 const cleanTrack = nodeNameRaw
                     .replace(/^.*[:|]/, "")
                     .replace(/mixamorig[0-9]*:?_?/gi, "")
                     .toLowerCase();
                 const targetBone = bonesByCleanName.get(cleanTrack) || bonesByCleanName.get(nodeNameRaw.toLowerCase());
                 if (targetBone) {
-                    track.name = targetBone.name + "." + property;
+                    typedTrack.name = targetBone.name + "." + property;
                 }
             });
             const action = mixer.current!.clipAction(clip);
@@ -55,21 +83,46 @@ export function Character({ animation = "idle" }: { animation?: string }) {
         };
 
         setupAnimation(wavingFBX, "waving");
+        loadedActions.current.add("waving");
 
-        // Dynamically load other animations to speed up initial load
-        const loader = new (require("three/examples/jsm/loaders/FBXLoader").FBXLoader)();
+        const loader = new FBXLoader();
+        const pendingLoads = new Set<string>();
 
-        const loadLazyAnimation = (path: string, name: string) => {
-            loader.load(path, (fbx: any) => {
+        const loadAnimation = (path: string, name: string) => {
+            if (loadedActions.current.has(name) || pendingLoads.has(name)) return;
+            pendingLoads.add(name);
+            loader.load(path, (fbx: FBXModel) => {
                 setupAnimation(fbx, name);
+                loadedActions.current.add(name);
+                pendingLoads.delete(name);
+                if (pendingAnimation.current === name) {
+                    pendingAnimation.current = null;
+                    playAnimation(name);
+                }
             });
         };
 
-        loadLazyAnimation("/Wave Hip Hop Dance.fbx", "dance");
-        loadLazyAnimation("/Swing To Land.fbx", "action");
-        loadLazyAnimation("/Sleeping Idle.fbx", "sleep");
+        const loadAllNonEssentialAnimations = () => {
+            loadAnimation("/Wave Hip Hop Dance.fbx", "dance");
+            loadAnimation("/Swing To Land.fbx", "action");
+            loadAnimation("/Sleeping Idle.fbx", "sleep");
+        };
+
+        const idleCallback =
+            typeof window !== "undefined" && "requestIdleCallback" in window
+                ? window.requestIdleCallback
+                : (cb: FrameRequestCallback | (() => void)) => window.setTimeout(cb as () => void, 3500);
+
+        const idleHandle = idleCallback(() => {
+            loadAllNonEssentialAnimations();
+        });
 
         return () => {
+            if (typeof window !== "undefined" && "cancelIdleCallback" in window && typeof idleHandle === "number") {
+                window.cancelIdleCallback(idleHandle as number);
+            } else {
+                window.clearTimeout(idleHandle as number);
+            }
             mixer.current?.stopAllAction();
             mixer.current = null;
         };
@@ -78,39 +131,15 @@ export function Character({ animation = "idle" }: { animation?: string }) {
     useEffect(() => {
         if (!mixer.current) return;
 
+        const actionsSnapshot = actions.current;
         let timeout: NodeJS.Timeout | null = null;
         let interval: NodeJS.Timeout | null = null;
 
-        if (animation === "waving") {
-            // Fade out any currently running animations when returning to idle
-            Object.values(actions.current).forEach(action => {
-                if (action.isRunning() && action !== actions.current["waving"]) {
-                    action.fadeOut(0.5);
-                }
-            });
-
-            // Idle state behavior: Wave once every 10 seconds
-            const playWaveOnce = () => {
-                const action = actions.current["waving"];
-                if (action) {
-                    action.reset()
-                        .setEffectiveWeight(1)
-                        .setEffectiveTimeScale(1)
-                        .setLoop(THREE.LoopOnce, 1)
-                        .clampWhenFinished = false; // Ensure it returns to bind pose
-                    action.play();
-                }
-            };
-
-            // First wave after 2 seconds
-            timeout = setTimeout(playWaveOnce, 2000);
-            // Subsequent waves every 10 seconds
-            interval = setInterval(playWaveOnce, 10000);
-        } else {
-            const nextAction = actions.current[animation];
+        const playAnimation = (name: string) => {
+            const nextAction = actionsSnapshot[name];
             if (!nextAction) return;
 
-            const currentActions = Object.values(actions.current).filter(a => a.isRunning());
+            const currentActions = Object.values(actionsSnapshot).filter(a => a.isRunning());
             currentActions.forEach(action => {
                 if (action !== nextAction) {
                     action.fadeOut(0.5);
@@ -122,6 +151,52 @@ export function Character({ animation = "idle" }: { animation?: string }) {
                 .setLoop(THREE.LoopRepeat, Infinity)
                 .fadeIn(0.5)
                 .play();
+        };
+
+        if (animation === "waving") {
+            Object.values(actions.current).forEach(action => {
+                if (action.isRunning() && action !== actions.current["waving"]) {
+                    action.fadeOut(0.5);
+                }
+            });
+
+            const playWaveOnce = () => {
+                const action = actions.current["waving"];
+                if (action) {
+                    action.reset()
+                        .setEffectiveWeight(1)
+                        .setEffectiveTimeScale(1)
+                        .setLoop(THREE.LoopOnce, 1)
+                        .clampWhenFinished = false;
+                    action.play();
+                }
+            };
+
+            timeout = setTimeout(playWaveOnce, 2000);
+            interval = setInterval(playWaveOnce, 10000);
+        } else {
+            const actionName = animation;
+            const nextAction = actions.current[actionName];
+            if (nextAction) {
+                playAnimation(actionName);
+            } else {
+                pendingAnimation.current = actionName;
+                const animationPaths: Record<string, string> = {
+                    dance: "/Wave Hip Hop Dance.fbx",
+                    action: "/Swing To Land.fbx",
+                    sleep: "/Sleeping Idle.fbx"
+                };
+                const path = animationPaths[actionName];
+                if (path) {
+                    const loader = new FBXLoader();
+                    loader.load(path, (fbx: FBXModel) => {
+                        setupAnimation(fbx, actionName);
+                        loadedActions.current.add(actionName);
+                        pendingAnimation.current = null;
+                        playAnimation(actionName);
+                    });
+                }
+            }
         }
 
         return () => {

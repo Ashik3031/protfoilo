@@ -1,9 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { Scene3D } from "./Scene3D";
 import { useState, useEffect, useRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
+
+const Scene3D = dynamic(() => import("./Scene3D").then((mod) => mod.Scene3D), {
+    ssr: false,
+    loading: () => <div className="h-full w-full bg-[#f9f7f2]" />
+});
 
 const AUDIO_MAP: Record<string, string> = {
     dance: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // Energetic
@@ -15,7 +20,14 @@ const AUDIO_MAP: Record<string, string> = {
 export function Hero() {
     const [animation, setAnimation] = useState("waving");
     const [isMuted, setIsMuted] = useState(false);
+    const [showScene, setShowScene] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const frame = window.requestAnimationFrame(() => setShowScene(true));
+        return () => window.cancelAnimationFrame(frame);
+    }, []);
 
     useEffect(() => {
         // Stop current audio
@@ -89,7 +101,11 @@ export function Hero() {
                 */}
                 <div style={{ width: "100%", height: "300px", overflow: "hidden" }}>
                     <div style={{ height: "600px", marginTop: "-300px" }}>
-                        <Scene3D animation={animation} />
+                        {showScene ? (
+                            <Scene3D animation={animation} />
+                        ) : (
+                            <div className="h-full w-full bg-[#f9f7f2]" />
+                        )}
                     </div>
                 </div>
 
